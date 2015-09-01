@@ -17,6 +17,15 @@ module ActiveAdmin
           expect(config.route_collection_path).to eq '/admin/categories'
         end
 
+        context "when locale specified" do
+          let(:locale) { :de }
+          let(:params) { {locale: locale, other: 'xxx'} }
+
+          it "should return the route collection path with locale parameter" do
+            expect(config.route_collection_path(params)).to eq "/admin/categories?locale=#{locale}"
+          end
+        end
+
         it "should return the route instance path" do
           expect(config.route_instance_path(category)).to eq '/admin/categories/123'
         end
@@ -32,6 +41,16 @@ module ActiveAdmin
           reload_routes!
           expect(config.route_collection_path).to eq "/categories"
         end
+
+        context "when locale specified" do
+          let(:locale) { :de }
+          let(:params) { {locale: locale, other: 'xxx'} }
+
+          it "should generate a correct route with locale paramater" do
+            reload_routes!
+            expect(config.route_collection_path(params)).to eq "/categories?locale=#{locale}"
+          end
+        end
       end
 
       context "when registering a plural resource" do
@@ -41,6 +60,15 @@ module ActiveAdmin
 
         it "should return the plural route with _index" do
           expect(config.route_collection_path).to eq "/admin/news"
+        end
+
+        context "when locale specified" do
+          let(:locale) { :de }
+          let(:params) { {locale: locale, other: 'xxx'} }
+
+          it "should return the plural route with _index and locale parameter" do
+            expect(config.route_collection_path(params)).to eq "/admin/news?locale=#{locale}"
+          end
         end
       end
 
@@ -62,6 +90,15 @@ module ActiveAdmin
 
         it "should nest the collection path" do
           expect(config.route_collection_path(category_id: 1)).to eq "/admin/categories/1/posts"
+        end
+
+        context "when locale specified" do
+          let(:locale) { :de }
+          let(:params) { {locale: locale, other: 'xxx'} }
+
+          it "should nest the collection path and include locale" do
+            expect(config.route_collection_path({category_id: 1}.merge(params))).to eq "/admin/categories/1/posts?locale=#{locale}"
+          end
         end
 
         it "should nest the instance path" do

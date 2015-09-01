@@ -93,9 +93,14 @@ module ActiveAdmin
         end
 
         def route_collection_params(params)
+          options = []
+
           if nested?
-            params[:"#{belongs_to_name}_id"]
+            options << params[:"#{belongs_to_name}_id"]
           end
+          options << { locale: params[:locale] } if params.key?(:locale)
+
+          options
         end
 
         def nested?
