@@ -17,6 +17,10 @@ module ActiveAdmin
           expect(config.route_collection_path).to eq '/admin/categories'
         end
 
+        it "should return the route instance path" do
+          expect(config.route_instance_path(category)).to eq '/admin/categories/123'
+        end
+
         context "when locale specified" do
           let(:locale) { :de }
           let(:params) { {locale: locale, other: 'xxx'} }
@@ -24,10 +28,10 @@ module ActiveAdmin
           it "should return the route collection path with locale parameter" do
             expect(config.route_collection_path(params)).to eq "/admin/categories?locale=#{locale}"
           end
-        end
 
-        it "should return the route instance path" do
-          expect(config.route_instance_path(category)).to eq '/admin/categories/123'
+          it "should return the route instance path with locale parameter" do
+            expect(config.route_instance_path(category, params)).to eq "/admin/categories/123?locale=#{locale}"
+          end
         end
       end
 
@@ -92,6 +96,10 @@ module ActiveAdmin
           expect(config.route_collection_path(category_id: 1)).to eq "/admin/categories/1/posts"
         end
 
+        it "should nest the instance path" do
+          expect(config.route_instance_path(post)).to eq "/admin/categories/1/posts/3"
+        end
+
         context "when locale specified" do
           let(:locale) { :de }
           let(:params) { {locale: locale, other: 'xxx'} }
@@ -99,10 +107,10 @@ module ActiveAdmin
           it "should nest the collection path and include locale" do
             expect(config.route_collection_path({category_id: 1}.merge(params))).to eq "/admin/categories/1/posts?locale=#{locale}"
           end
-        end
 
-        it "should nest the instance path" do
-          expect(config.route_instance_path(post)).to eq "/admin/categories/1/posts/3"
+          it "should nest the instance path and include locale" do
+            expect(config.route_instance_path(post, params)).to eq "/admin/categories/1/posts/3?locale=#{locale}"
+          end
         end
       end
     end

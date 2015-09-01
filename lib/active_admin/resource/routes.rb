@@ -11,12 +11,12 @@ module ActiveAdmin
       # @param resource [ActiveRecord::Base] the instance we want the path of
       # @return [String] the path to this resource collection page
       # @example "/admin/posts/1"
-      def route_instance_path(resource)
-        RouteBuilder.new(self).instance_path(resource)
+      def route_instance_path(resource, params = {})
+        RouteBuilder.new(self).instance_path(resource, params)
       end
 
-      def route_edit_instance_path(resource)
-        RouteBuilder.new(self).edit_instance_path(resource)
+      def route_edit_instance_path(resource, params = {})
+        RouteBuilder.new(self).edit_instance_path(resource, params)
       end
 
       # Returns the routes prefix for this config
@@ -49,20 +49,20 @@ module ActiveAdmin
         # @return [String] the path to this resource collection page
         # @param instance [ActiveRecord::Base] the instance we want the path of
         # @example "/admin/posts/1"
-        def instance_path(instance)
+        def instance_path(instance, params = {})
           route_name = route_name(resource.resources_configuration[:self][:route_instance_name])
 
-          routes.public_send route_name, *route_instance_params(instance)
+          routes.public_send route_name, *route_instance_params(instance, params)
         end
 
         # @return [String] the path to the edit page of this resource
         # @param instance [ActiveRecord::Base] the instance we want the path of
         # @example "/admin/posts/1/edit"
-        def edit_instance_path(instance)
+        def edit_instance_path(instance, params = {})
           path = resource.resources_configuration[:self][:route_instance_name]
           route_name = route_name(path, action: :edit)
 
-          routes.public_send route_name, *route_instance_params(instance)
+          routes.public_send route_name, *route_instance_params(instance, params)
         end
 
         private
@@ -84,12 +84,18 @@ module ActiveAdmin
 
 
         # @return params to pass to instance path
-        def route_instance_params(instance)
+        def route_instance_params(instance, params = {})
+          options = []
+
           if nested?
-            [instance.public_send(belongs_to_name).to_param, instance.to_param]
+            options << instance.public_send(belongs_to_name).to_param
+            options << instance.to_param
           else
-            instance.to_param
+            options << instance.to_param
           end
+          options << { locale: params[:locale] } if params.key?(:locale)
+
+          options
         end
 
         def route_collection_params(params)

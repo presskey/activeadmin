@@ -20,16 +20,16 @@ module ActiveAdmin
       end
 
       # Like `auto_link`, except that it only returns a URL instead of a full <a> tag
-      def auto_url_for(resource)
+      def auto_url_for(resource, params = {})
         config = active_admin_resource_for(resource.class)
         return unless config
 
         if config.controller.action_methods.include?("show") &&
           authorized?(ActiveAdmin::Auth::READ, resource)
-          url_for config.route_instance_path resource
+          url_for config.route_instance_path resource, params
         elsif config.controller.action_methods.include?("edit") &&
           authorized?(ActiveAdmin::Auth::UPDATE, resource)
-          url_for config.route_edit_instance_path resource
+          url_for config.route_edit_instance_path resource, params
         end
       end
 
