@@ -249,7 +249,7 @@ module ActiveAdmin
           raise "#{resource_class.name} as no primary_key!" unless resource_class.primary_key
           column(resource_class.human_attribute_name(resource_class.primary_key), sortable: resource_class.primary_key) do |resource|
             if controller.action_methods.include?('show')
-              link_to resource.id, resource_path(resource, params.slice(:locale).symbolize_keys), class: "resource_id_link"
+              link_to resource.id, resource_path(resource, locale_params), class: "resource_id_link"
             else
               resource.id
             end
@@ -325,16 +325,22 @@ module ActiveAdmin
       private
 
         def defaults(resource, options = {})
+          locale = params.slice(:locale).symbolize_keys
+
           if controller.action_methods.include?('show') && authorized?(ActiveAdmin::Auth::READ, resource)
-            item I18n.t('active_admin.view'), resource_path(resource), class: "view_link #{options[:css_class]}"
+            item I18n.t('active_admin.view'), resource_path(resource, locale_params), class: "view_link #{options[:css_class]}"
           end
           if controller.action_methods.include?('edit') && authorized?(ActiveAdmin::Auth::UPDATE, resource)
-            item I18n.t('active_admin.edit'), edit_resource_path(resource), class: "edit_link #{options[:css_class]}"
+            item I18n.t('active_admin.edit'), edit_resource_path(resource, locale_params), class: "edit_link #{options[:css_class]}"
           end
           if controller.action_methods.include?('destroy') && authorized?(ActiveAdmin::Auth::DESTROY, resource)
-            item I18n.t('active_admin.delete'), resource_path(resource), class: "delete_link #{options[:css_class]}",
+            item I18n.t('active_admin.delete'), resource_path(resource, locale_params), class: "delete_link #{options[:css_class]}",
               method: :delete, data: {confirm: I18n.t('active_admin.delete_confirmation')}
           end
+        end
+
+        def locale_params
+          @locale_params ||= params.slice(:locale).symbolize_keys
         end
 
         class TableActions < ActiveAdmin::Component
